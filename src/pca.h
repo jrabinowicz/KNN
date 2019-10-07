@@ -10,6 +10,6 @@ public:
     Eigen::MatrixXd transform(SparseMatrix X);
 private:
 
-	unsigned int componentes;
+	unsigned int alpha;
 	Matrix autovectores;
 };
