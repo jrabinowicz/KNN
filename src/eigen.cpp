@@ -15,13 +15,19 @@ pair<double, Vector> power_iteration(const Matrix& X, unsigned num_iter, double 
      **********************/
     //puede que haya que hacer reshape de b
     unsigned i = 0;
+    Vector aux;
     while (i < num_iter)
     {
+        aux = b;
     	Vector prod = X * b; 
     	prod /= prod.norm();
     	b = prod;
+        if(((b-aux).norm()) < eps){
+            break;
+        }
     	i++;
     }
+    cout << "Hice " << i << " iteraciones" << endl;
 
     eigenvalue = b.transpose() * X * b; 
     eigenvalue /= b.norm();

@@ -27,8 +27,8 @@ Vector KNNClassifier::distance_to_row(Vector row)
 	return res;
 }
 
-#define POS 1
-#define NEG 0
+#define POS 'pos'
+#define NEG 'neg'
 
 double KNNClassifier::predict_row(Vector row)
 {
@@ -40,6 +40,14 @@ double KNNClassifier::predict_row(Vector row)
 	 	argsort[i].second = i;
 	}
 	sort(argsort.begin(), argsort.end());
+	cout << "anda argsort" << endl;
+
+	cout << "[ ";
+	for (int i = 0; i < argsort.size(); ++i)
+	{
+		cout << "(" << argsort[i].first << "," << argsort[i].second << "), "; 
+	}
+	cout << "]";
 
 	//Matrix kvecinos;
 	int pos = 0;
@@ -49,6 +57,7 @@ double KNNClassifier::predict_row(Vector row)
 		int j = argsort[i].second;
 		//kvecinos.row(i) = _y(j,1);
 		//VERIFICAR QUE LOS VALORES DE _y SEAN 0(NEG) Y 1(POS)
+		cout << _y(j,1) << endl; 
 		if(_y(j,1) == POS)
 			pos++;
 		else
@@ -65,10 +74,12 @@ Vector KNNClassifier::predict(SparseMatrix X)
 {
     // Creamos vector columna a devolver
     auto ret = Vector(X.rows());
+    cout << "anda esto" << endl;
 
     for (unsigned k = 0; k < X.rows(); ++k)
     {
         ret(k) = this->predict_row(X.row(k));
+		cout << "anda la iter " << k << endl;        
     }
 
     return ret;
