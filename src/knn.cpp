@@ -26,8 +26,8 @@ Vector KNNClassifier::distance_to_row(Vector row)
 	return res;
 }
 
-#define POS 'pos'
-#define NEG 'neg'
+#define POS 1
+#define NEG 0
 
 double KNNClassifier::predict_row(Vector row)
 {
@@ -52,10 +52,10 @@ double KNNClassifier::predict_row(Vector row)
 			neg++;
 	}
 
-	double res = POS;
+	int res = POS;
 	if(neg>pos)
 		res = NEG;
-	return res;
+	return (double) res;
 }
 
 Vector KNNClassifier::predict(SparseMatrix X)
@@ -65,7 +65,7 @@ Vector KNNClassifier::predict(SparseMatrix X)
 
     for (unsigned k = 0; k < X.rows(); ++k)
     {
-        ret(k) = this->predict_row(X.row(k));        
+        ret(k) = this->predict_row(X.row(k));       
     }
 
     return ret;
