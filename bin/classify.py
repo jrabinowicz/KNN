@@ -10,7 +10,8 @@ sys.path.append("notebooks/")
 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
-from sentiment import PCA, KNNClassifier
+from sentiment import PCA, KNNClassifier, get_first_eigenvalues
+import numpy as np
 
 def get_instances(df, df_test):
     """
@@ -38,6 +39,29 @@ def get_instances(df, df_test):
     return X_train, y_train, X_test, ids_test
 
 if __name__ == '__main__':
+
+    '''
+    # Testeamos power iteration: FUNCIONA
+    D = np.diag([6.0, 5.0, 4.0, 3.0, 2.0, 1.0])
+    v = np.ones((D.shape[0], 1))
+    v = v / np.linalg.norm(v)
+    # Matriz de Householder
+    B = np.eye(D.shape[0]) - 2 * (v @ v.T)
+    # Matriz ya diagonalizada
+    M = B.T @ D @ B
+
+    print("Autovalores orig: ")
+    print(D)
+    print("Autovectores orig: ")
+    print(B)
+
+    res = get_first_eigenvalues(M, 6)
+    print("Autovalores calc: ")
+    print(res[0])
+    print("Autovectores calc: ")
+    print(res[1])
+    '''
+    '''
     if len(sys.argv) != 3:
         print("Uso: python classify archivo_de_test archivo_salida")
         exit()
@@ -51,24 +75,23 @@ if __name__ == '__main__':
     print("Vectorizando datos...")
     X_train, y_train, X_test, ids_test = get_instances(df, df_test)
     #Comentar esto si nuestra mejor configuración no usa PCA
-    alpha = 5
+    alpha = 10
     pca = PCA(alpha)
 
     print("Entrenando PCA")
     pca.fit(X_train.toarray())
     X_train = pca.transform(X_train)
     X_test = pca.transform(X_test)
-
-    """
-    Entrenamos KNN
-    """
-    clf = KNNClassifier(5)
+    
+    #Entrenamos KNN
+    
+    clf = KNNClassifier(10)
 
     clf.fit(X_train, y_train)
-
-    """
-    Testeamos
-    """
+    
+    
+    #Testeamos
+    
     print("Prediciendo etiquetas...")
     y_pred = clf.predict(X_test).reshape(-1)
     # Convierto a 'pos' o 'neg'
@@ -79,3 +102,4 @@ if __name__ == '__main__':
     df_out.to_csv(out_path, index=False)
 
     print("Salida guardada en {}".format(out_path))
+    '''
