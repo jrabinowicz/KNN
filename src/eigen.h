@@ -14,7 +14,7 @@ num_iter: unsigned (=5000 por defecto)
     Cantidad de iteraciones a correr
 
 eps: double
-    Tolerancia a residuo (opcional)
+    Tolerancia para la diferencia entre el vector i-1 y vector i para criterio de parada en el paso i-esimo
 
 Devuelve:
 --------

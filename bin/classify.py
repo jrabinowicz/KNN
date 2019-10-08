@@ -51,7 +51,7 @@ if __name__ == '__main__':
     print("Vectorizando datos...")
     X_train, y_train, X_test, ids_test = get_instances(df, df_test)
     #Comentar esto si nuestra mejor configuración no usa PCA
-    alpha = 100
+    alpha = 5
     pca = PCA(alpha)
 
     print("Entrenando PCA")
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     """
     Entrenamos KNN
     """
-    clf = KNNClassifier(100)
+    clf = KNNClassifier(5)
 
     clf.fit(X_train, y_train)
 
