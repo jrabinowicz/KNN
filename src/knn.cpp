@@ -11,16 +11,34 @@ KNNClassifier::KNNClassifier(unsigned int n_neighbors)
 	: _n_neighbors(n_neighbors) {
 }
 
+unsigned int KNNClassifier::vecinos(){
+	return this->_n_neighbors;
+}
+MatrixXd KNNClassifier::dame_X(){
+	return MatrixXd(this->_X);
+}
+Matrix KNNClassifier::dame_y(){
+	return this->_y;
+}
+
 void KNNClassifier::fit(SparseMatrix X, Matrix y)
 {
 	_X = X;
-	_y = y;
+	_y = y.transpose();
 }
 
 Vector KNNClassifier::distance_to_row(Vector row)
 {	
 	//Convierto a dense matrix porque sparse no tiene rowwise y entre norm y for termina siendo peor
 	Matrix temp = MatrixXd(_X);
+	// Vector res(_X.rows());
+	// for (int i = 0; i < _X.rows(); ++i)
+	// {
+	// 	double norm = 0;
+	// 	Vector rowsub = _X.row(i) - row.transpose();
+	// 	norm = rowsub.norm();
+	// 	res(i) = norm;
+	// }
 	temp.rowwise() -= (row.transpose()).eval();
 	Vector res = temp.rowwise().norm();
 	return res;
@@ -46,7 +64,7 @@ double KNNClassifier::predict_row(Vector row)
 	for (unsigned int i = 0; i < _n_neighbors; ++i)
 	{
 		int j = argsort[i].second;
-		if(_y(j,1) == POS)
+		if((_y.transpose())(j,1) == POS)
 			pos++;
 		else
 			neg++;

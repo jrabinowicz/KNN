@@ -1,25 +1,20 @@
 """Clasifica el conjunto de entrada usando el mejor clasificador encontrado
-
 Nota: Asumimos que el .so generado (sentiment.cpython....so) está en la carpeta
 `notebooks/`
-
 """
 # Estas dos líneas permiten que python encuentre la librería sentiment en notebooks/
 import sys
 sys.path.append("notebooks/")
 
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
-from sentiment import PCA, KNNClassifier, get_first_eigenvalues
-import numpy as np
+from sentiment import PCA, KNNClassifier
 
 def get_instances(df, df_test):
     """
     Lee instancias de entrenamiento y de test
     """
-    df_res = pd.read_csv(result_path)
-    label_test = df_res["label"]
-
     text_train = df[df.type == 'train']["review"]
     label_train = df[df.type == 'train']["label"]
 
@@ -37,74 +32,62 @@ def get_instances(df, df_test):
 
     X_train, y_train = vectorizer.transform(text_train), (label_train == 'pos').values
 
-    X_test, y_test = vectorizer.transform(text_test), (label_test == 'pos').values
+    X_test = vectorizer.transform(text_test)
 
-    return X_train, y_train, X_test, ids_test, y_test
+    return X_train, y_train, X_test, ids_test
 
 if __name__ == '__main__':
-
-    '''
-    # Testeamos power iteration: FUNCIONA
-    D = np.diag([6.0, 5.0, 4.0, 3.0, 2.0, 1.0])
-    v = np.ones((D.shape[0], 1))
-    v = v / np.linalg.norm(v)
-    # Matriz de Householder
-    B = np.eye(D.shape[0]) - 2 * (v @ v.T)
-    # Matriz ya diagonalizada
-    M = B.T @ D @ B
-
-    print("Autovalores orig: ")
-    print(D)
-    print("Autovectores orig: ")
-    print(B)
-
-    res = get_first_eigenvalues(M, 6)
-    print("Autovalores calc: ")
-    print(res[0])
-    print("Autovectores calc: ")
-    print(res[1])
-    '''
     if len(sys.argv) != 3:
         print("Uso: python classify archivo_de_test archivo_salida")
         exit()
 
     test_path = sys.argv[1]
     out_path = sys.argv[2]
-    result_path = "data/test_sample.true"
 
     df = pd.read_csv("data/imdb_small.csv")
     df_test = pd.read_csv(test_path)
 
     print("Vectorizando datos...")
-    X_train, y_train, X_test, ids_test, y_test = get_instances(df, df_test)
+    X_train, y_train, X_test, ids_test = get_instances(df, df_test)
     #Comentar esto si nuestra mejor configuración no usa PCA
-    alpha = 10
-    pca = PCA(alpha)
+    # alpha = 10
+    # pca = PCA(alpha)
 
-    print("Entrenando PCA")
-    pca.fit(X_train.toarray())
-    X_train = pca.transform(X_train)
-    X_test = pca.transform(X_test)
-    
-    #Entrenamos KNN
-    
-    clf = KNNClassifier(10)
+    # print("Entrenando PCA")
+    # pca.fit(X_train.toarray())
+    # X_train = pca.transform(X_train)
+    # X_test = pca.transform(X_test)
+
+    # print(X_train.toarray())
+    # print(y_train)
+    # print(X_test.toarray())
+
+    # """
+    # Entrenamos KNN
+    # """
+    print("Entrenando KNN")
+    k = 10
+    clf = KNNClassifier(k)
 
     clf.fit(X_train, y_train)
-    
-    
-    #Testeamos
-    
+
+    #print(clf.vecinos())
+    #print(np.allclose(clf.dame_X(), X_train.toarray()))
+
+    # print(np.allclose(clf.dame_y(), y_train))
+    # print(y_train)
+    # print(clf.dame_y())
+    # print(y_train - clf.dame_y())
+    # print(type(y_train))
+    # print(type(clf.dame_y()))
+
+
+    # """
+    # Testeamos
+    # """
     print("Prediciendo etiquetas...")
-    from sklearn.metrics import accuracy_score
     y_pred = clf.predict(X_test).reshape(-1)
     # Convierto a 'pos' o 'neg'
-
-    print(y_pred)
-    
-    acc = accuracy_score(y_test, y_pred)
-    print("Accuracy: {}".format(acc))
-    
     labels = ['pos' if val == 1 else 'neg' for val in y_pred]
 
     df_out = pd.DataFrame({"id": ids_test, "label": labels})
@@ -112,4 +95,3 @@ if __name__ == '__main__':
     df_out.to_csv(out_path, index=False)
 
     print("Salida guardada en {}".format(out_path))
-    
