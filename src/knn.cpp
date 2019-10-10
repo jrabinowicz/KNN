@@ -64,7 +64,7 @@ double KNNClassifier::predict_row(Vector row)
 	for (unsigned int i = 0; i < _n_neighbors; ++i)
 	{
 		int j = argsort[i].second;
-		if((_y.transpose())(j,1) == POS)
+		if((_y.transpose())(j,0) == POS)
 			pos++;
 		else
 			neg++;
