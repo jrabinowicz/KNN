@@ -14,6 +14,7 @@ public:
     unsigned int vecinos();
 	MatrixXd dame_X();
 	Matrix dame_y();
+	Vector predictNewK(unsigned int knuevo);
 private:
 	unsigned int _n_neighbors;
 	SparseMatrix _X;
@@ -23,7 +24,6 @@ private:
 	// y la distribución debería ser aproximadamente 50/50
 	Eigen::SparseMatrix<double,Eigen::ColMajor> _vote_mat;
 	
-	Vector predictNewK(unsigned int knuevo);
 	void predict_row(Vector row, unsigned k);
 	Vector distance_to_row(Vector row);
 };

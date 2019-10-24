@@ -8,9 +8,9 @@ public:
     void fit(Matrix X);
 
     Eigen::MatrixXd transform(SparseMatrix X);
+	int newAlpha(unsigned int anuevo);
 private:
 
 	unsigned int alpha;
 	Matrix autovectores;
-	int newAlpha(unsigned int anuevo);
 };

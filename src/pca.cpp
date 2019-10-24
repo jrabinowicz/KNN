@@ -27,6 +27,7 @@ MatrixXd PCA::transform(SparseMatrix X){
 }
 
 // Como precondicion, toma un alpha mas chico que ya tiene el pca en private. Deberiamos recortar la matriz de autovectores
+// Se hace antes de hacer un nuevo transform
 int PCA::newAlpha(unsigned int anuevo){ 
 	// Nos quedamos solo con los primeros anuevo autovectores
 	if(anuevo > this->alpha){

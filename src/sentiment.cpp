@@ -13,14 +13,19 @@ PYBIND11_MODULE(sentiment, m) {
         .def("fit", &KNNClassifier::fit)
         .def("predict", &KNNClassifier::predict)
 
+        // Propios:
         .def("vecinos", &KNNClassifier::vecinos)
         .def("dame_X", &KNNClassifier::dame_X)
-        .def("dame_y", &KNNClassifier::dame_y);
+        .def("dame_y", &KNNClassifier::dame_y)
+        .def("predictNewK", &KNNClassifier::predictNewK);
 
     py::class_<PCA>(m, "PCA")
         .def(py::init<unsigned int>())
         .def("fit", &PCA::fit)
-        .def("transform", &PCA::transform);
+        .def("transform", &PCA::transform)
+
+        // Propios:
+        .def("newAlpha", &PCA::newAlpha);
     m.def(
         "power_iteration", &power_iteration,
         "Function that calculates eigenvector",

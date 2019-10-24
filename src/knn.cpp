@@ -25,8 +25,6 @@ void KNNClassifier::fit(SparseMatrix X, Matrix y)
 {
 	_X = X;
 	_y = y.transpose();
-	Eigen::SparseMatrix<double,Eigen::ColMajor> temp(X.rows(), _n_neighbors);
-	_vote_mat = temp;
 }
 
 Vector KNNClassifier::distance_to_row(Vector row)
@@ -84,20 +82,29 @@ void KNNClassifier::predict_row(Vector row, unsigned k)
 
 Vector KNNClassifier::predict(SparseMatrix X)
 {
+	// Inicializamos matriz de votos
+	Eigen::SparseMatrix<double,Eigen::ColMajor> temp(X.rows(), _n_neighbors);
+	_vote_mat = temp;
     // Creamos vector columna a devolver
     auto res = Vector(X.rows());
+    //cout << "filas X: " << X.rows() << endl;
+    //cout << "columnas vote_mat: " << _vote_mat.cols() << endl;
+    //cout << "filas vote_mat: " << _vote_mat.rows() << endl;
 
     for (unsigned k = 0; k < X.rows(); ++k)
     {
     	cout << "predigo " << k << endl;
+    	this->predict_row(X.row(k), k);
         // ret(k) = this->predict_row(X.row(k));       
     }
     // Tengo vote_mat completa, tengo que hacer suma rowwise para obtener las predicciones de cada linea con k vecinos
     // o quitarle columnas a vote_mat para sacar vecinos y ahi hacer la suma rowwise (eso hace predictNewK)
     // suma rowwise con sparse_Matrix = sparse_mat * VectorXd::Ones(sparse_mat.cols())
     // (sacado de aca: https://forum.kde.org/viewtopic.php?f=74&t=122971)
+
     res = _vote_mat * Eigen::VectorXd::Ones(_vote_mat.cols());
-    return res;
+    res /= _vote_mat.cols();
+    return Eigen::round(res.array());
 }
 
 // Precondición: knuevo es menor al k con el que se entrenó el clasificador por última vez.
@@ -105,12 +112,15 @@ Vector KNNClassifier::predict(SparseMatrix X)
 Vector KNNClassifier::predictNewK(unsigned int knuevo){
 	if(knuevo > _n_neighbors){
 		cerr << "knuevo debe ser mayor que kviejo" << endl;
-		// Si falla devuelve vector de ceros
+		// Si falla devuelve vector de -1
 		return -Eigen::VectorXd::Ones(_vote_mat.cols());
 	}
-	_vote_mat = _vote_mat.leftCols(knuevo-1);
+	_vote_mat = _vote_mat.leftCols(knuevo);
 	_n_neighbors = knuevo;
+	cout << "nuevas columnas _vote_mat: " << _vote_mat.cols() << endl;
+	cout << "nuevo k: " << _n_neighbors << endl;
 	Vector res = _vote_mat * Eigen::VectorXd::Ones(_vote_mat.cols());
-	return res;
+    res /= _vote_mat.cols();
+	return Eigen::round(res.array());
 }
 
