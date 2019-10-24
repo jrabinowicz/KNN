@@ -4,7 +4,9 @@
 
 using namespace std;
 
-
+// Pasamos el alpha máximo que vamos a testear, y calculamos su matriz de autovectores
+// Pasar a un alpha más chico de la misma base de entrenamiento no es mas que recortar columnas de
+//    la matriz de autovectores
 PCA::PCA(unsigned int n_components): alpha(n_components) {}
 
 void PCA::fit(Matrix X){
@@ -22,4 +24,19 @@ MatrixXd PCA::transform(SparseMatrix X){
 	Matrix cambioDeBase = this->autovectores;
 	aux = aux * cambioDeBase;
 	return aux;
+}
+
+// Como precondicion, toma un alpha mas chico que ya tiene el pca en private. Deberiamos recortar la matriz de autovectores
+int PCA::newAlpha(unsigned int anuevo){ 
+	// Nos quedamos solo con los primeros anuevo autovectores
+	if(anuevo > this->alpha){
+		cerr << "anuevo debe ser menor que aviejo" << endl;
+		return -1;
+	}
+	Matrix avecNuevos = (this->autovectores)(Eigen::all, Eigen::seq(0,anuevo-1));
+	this->autovectores = avecNuevos;
+	this->alpha = anuevo;
+	// QUEREMOS CHEQUEAR: que autovectores tenga tamaño (algo,anuevo) despues de esto
+	cout << "nuevo alpha: " << this->alpha << " nueva cant avec: " << this->autovectores.cols() << endl;
+	return 0;
 }

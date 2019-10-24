@@ -12,4 +12,5 @@ private:
 
 	unsigned int alpha;
 	Matrix autovectores;
+	int newAlpha(unsigned int anuevo);
 };
