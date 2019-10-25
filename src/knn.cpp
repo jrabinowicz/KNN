@@ -30,6 +30,7 @@ void KNNClassifier::fit(SparseMatrix X, Matrix y)
 Vector KNNClassifier::distance_to_row(Vector row)
 {	
 	//Convierto a dense matrix porque sparse no tiene rowwise y entre norm y for termina siendo peor
+	cout << "llegué a distance_to_row" << endl;
 	Matrix temp = MatrixXd(_X);
 	// Vector res(_X.rows());
 	// for (int i = 0; i < _X.rows(); ++i)
@@ -50,6 +51,7 @@ Vector KNNClassifier::distance_to_row(Vector row)
 void KNNClassifier::predict_row(Vector row, unsigned k)
 {
 	Vector dist = this->distance_to_row(row);
+	cout << "funciona distance_to_row: " << dist << endl;
 	vector<pair<double, int> > argsort;
 	for (int i = 0; i < dist.size(); ++i)
 	{
@@ -59,10 +61,12 @@ void KNNClassifier::predict_row(Vector row, unsigned k)
 	 	argsort.push_back(par);
 	}
 	sort(argsort.begin(), argsort.end());
+	cout << "funciona argsort" << endl;
 	//int pos = 0;
 	//int neg = 0;
 	for (unsigned int i = 0; i < _n_neighbors; ++i)
 	{
+		cout << i << endl;
 		int j = argsort[i].second;
 		_vote_mat.insert(k, i) = _y.transpose()(j,0);
 		/* viejo
@@ -72,6 +76,7 @@ void KNNClassifier::predict_row(Vector row, unsigned k)
 			neg++;
 		*/
 	}
+	cout << _vote_mat.row(k) << endl;
 	/* viejo
 	int res = POS;
 	if(neg>pos)
@@ -83,9 +88,11 @@ void KNNClassifier::predict_row(Vector row, unsigned k)
 Vector KNNClassifier::predict(SparseMatrix X)
 {
 	// Inicializamos matriz de votos
+	cout << "Inicializo _vote_mat" << endl;
 	Eigen::SparseMatrix<double,Eigen::ColMajor> temp(X.rows(), _n_neighbors);
 	_vote_mat = temp;
     // Creamos vector columna a devolver
+    cout << "Exito" << endl;
     auto res = Vector(X.rows());
     //cout << "filas X: " << X.rows() << endl;
     //cout << "columnas vote_mat: " << _vote_mat.cols() << endl;
