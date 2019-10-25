@@ -18,6 +18,7 @@ pair<double, Vector> power_iteration(const Matrix& X, unsigned num_iter, double 
     	Vector prod = X * b; 
     	prod /= prod.norm();
     	b = prod;
+        //v.squaredNorm() || v.norm() || v.lpNorm<1>() || v.lpNorm<Infinity>()
         if(((b-aux).norm()) < eps){
             break;
         }
