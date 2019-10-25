@@ -111,9 +111,10 @@ Vector KNNClassifier::predict(SparseMatrix X)
     // (sacado de aca: https://forum.kde.org/viewtopic.php?f=74&t=122971)
 
     res = _vote_mat * Eigen::VectorXd::Ones(_vote_mat.cols());
-    cout << _vote_mat << endl;
+    //cout << _vote_mat << endl;
     res /= _vote_mat.cols();
-    cout << res << endl;
+    //cout << res << endl;
+    //cout << Eigen::round(res.array()) << endl;
     return Eigen::round(res.array());
 }
 
