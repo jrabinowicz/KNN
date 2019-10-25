@@ -30,7 +30,7 @@ void KNNClassifier::fit(SparseMatrix X, Matrix y)
 Vector KNNClassifier::distance_to_row(Vector row)
 {	
 	//Convierto a dense matrix porque sparse no tiene rowwise y entre norm y for termina siendo peor
-	cout << "llegué a distance_to_row" << endl;
+	//cout << "llegué a distance_to_row" << endl;
 	Matrix temp = MatrixXd(_X);
 	// Vector res(_X.rows());
 	// for (int i = 0; i < _X.rows(); ++i)
@@ -51,22 +51,23 @@ Vector KNNClassifier::distance_to_row(Vector row)
 void KNNClassifier::predict_row(Vector row, unsigned k)
 {
 	Vector dist = this->distance_to_row(row);
-	cout << "funciona distance_to_row: " << dist << endl;
+	//cout << "funciona distance_to_row: " << dist << endl;
 	vector<pair<double, int> > argsort;
 	for (int i = 0; i < dist.size(); ++i)
 	{
 	 	pair<double,int> par;
 	 	par.first = dist(i);
 	 	par.second = i;
+	 	//cout << par.first << "," << par.second << endl;
 	 	argsort.push_back(par);
 	}
 	sort(argsort.begin(), argsort.end());
-	cout << "funciona argsort" << endl;
+	//cout << "funciona argsort" << endl;
 	//int pos = 0;
 	//int neg = 0;
 	for (unsigned int i = 0; i < _n_neighbors; ++i)
 	{
-		cout << i << endl;
+		//cout << i << ": (" << argsort[i].first << "," << argsort[i].second << ")" << endl;
 		int j = argsort[i].second;
 		_vote_mat.insert(k, i) = _y.transpose()(j,0);
 		/* viejo
@@ -76,7 +77,7 @@ void KNNClassifier::predict_row(Vector row, unsigned k)
 			neg++;
 		*/
 	}
-	cout << _vote_mat.row(k) << endl;
+	//cout << _vote_mat.row(k) << endl;
 	/* viejo
 	int res = POS;
 	if(neg>pos)
@@ -110,7 +111,9 @@ Vector KNNClassifier::predict(SparseMatrix X)
     // (sacado de aca: https://forum.kde.org/viewtopic.php?f=74&t=122971)
 
     res = _vote_mat * Eigen::VectorXd::Ones(_vote_mat.cols());
+    cout << _vote_mat << endl;
     res /= _vote_mat.cols();
+    cout << res << endl;
     return Eigen::round(res.array());
 }
 
